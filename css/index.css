@@ -1,0 +1,101 @@
+html,body{ 
+	background: #222; 
+	margin:0; padding:0; 
+	font-family: "Hanuman",serif !important; 
+	height: 100%; 
+	width: 100%; }
+button{ cursor:pointer;}
+button:disabled{ cursor:not-allowed !important; }
+button:focus{ outline:none;}
+h1{ color:#fff;}
+#_cda_game{ margin-left:-100%; }
+#_cda_home{   margin-left:0%;  }
+#_cda_wait{  margin-left:-100%;  }
+
+#win{ background-color:rgba(255, 255, 255, 0.8); }
+#lose{ background-color:rgba(255, 255, 255, 0.8); }
+
+.full-screen{
+	width: 100%;
+	height: 100%;
+	position:fixed;
+}
+.full-screen.none{ display:none;}
+.home{
+	margin-left: auto;
+	margin-right: auto;
+	position: relative;
+	width: 35%;
+	height: 60%;
+	background-color: #131313;
+	border:1px solid #000;
+}	
+.home button.player1, .home button.player2{ border-radius: 20px;
+    border: none;
+    width: 25%;
+    background-color: transparent;
+    box-shadow: 1px 1px 15px 1px black;
+}
+.home button.player2{ margin-left:20%; }
+.home button:hover:enabled {cursor:pointer; box-shadow: 1px 1px 10px 1px #000; animation: toggleUp 0.3s infinite;  }
+.home button img{ max-width:100%;}
+.game{	
+	margin-left: auto;
+	margin-right: auto;
+	position: relative;
+	width: 35%;
+	height: 60%;
+	background-color: #131313;
+	border:5px solid #000;
+	border-right:5px dashed red;
+}
+.game > svg{width:100%;height:100%; position:absolute; left: 0;}
+.game > svg >line{ stroke:#000;stroke-width: 5;}
+.game > button.area{ cursor:pointer; width:20px; height:20px; background-color:#000; border:none; position:absolute; border-radius:50%;}
+
+.game-gurd{
+	position: absolute;
+    top: 0;
+    text-align: center;
+    left: 0;
+    right: 0;
+    background: #000;
+    color: #fff;
+}
+.game-gurd.active{
+	background: green;
+}
+.game-gurd img{ margin-bottom:-5px; }
+.game-gurd span{ margin-top:-5px; }
+button.player{ width:43px; height:45px; position:absolute; border:1px solid #ddd; background-color:#fff; padding:5px !important;  }
+button.player:before{
+			content: '';
+			position: absolute;
+			border: 10px solid transparent;
+			border-bottom-width: 0;				
+			top: 43px;
+			left: 10px;}
+button.player > img{ width:30px; height:30px; margin:0; }
+
+button.player.p1{ border-color:red;}
+button.player.p1:before{ border-top-color: red; }
+button.player.p2{ border-color:blue;}
+button.player.p2:before{ border-top-color: blue; }
+
+button.player[p='tl'],
+button.player[p='tr'],
+button.player[p='bl'],
+button.player[p='br']{ top:calc(50% - 55px); left:calc(50% - 22px); }
+
+button.area[p='tl']{ top:-10px; left:-10px;  }
+button.area[p='tr']{ top:-10px; right:-10px;  }
+button.area[p='c']{ top:calc(50% - 10px); left:calc(50% - 10px);  }
+button.area[p='bl']{ bottom:-10px; left:-10px; }
+button.area[p='br']{ bottom:-10px; right:-10px; }
+
+@keyframes toggleUp { 
+	0% {opacity: 1}
+	50% {opacity: 0.2;}
+	100% {opacity: 1;}
+}
+button.player.active{ animation: toggleUp 0.5s infinite; }
