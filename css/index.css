@@ -12,8 +12,8 @@ h1{ color:#fff;}
 #_cda_home{   margin-left:0%;  }
 #_cda_wait{  margin-left:-100%;  }
 
-#win{ background-color:rgba(255, 255, 255, 0.8); }
-#lose{ background-color:rgba(255, 255, 255, 0.8); }
+#win{ background-color:rgba(0, 0, 0, 0.82); }
+#lose{ background-color:rgba(0, 0, 0, 0.82); }
 
 .full-screen{
 	width: 100%;

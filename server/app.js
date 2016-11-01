@@ -2,7 +2,7 @@ var app = require('http').createServer();
 var io = require('socket.io')(app);
 var fs = require('fs');
 
-var hostname = 'localhost';
+var hostname = '192.168.0.111';
 var port = 3000;
 
 app.listen(port,hostname,function(){ 

@@ -8,7 +8,7 @@ var av_move = {
 	'bl':['c','tl','br'],
 	'br':['c','bl']
 };
-var socket = io.connect('http://localhost:3000');
+var socket = io.connect('http://192.168.0.111:3000');
 socket.on('countplayer', function (obj) {
 	countPlayer = obj.count;
 	$(".home button[p='"+obj.player+"']").prop('disabled', true);
