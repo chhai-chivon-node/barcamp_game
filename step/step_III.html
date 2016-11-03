@@ -1,0 +1,163 @@
+<!doctype html>
+
+<html lang="km">
+<head>
+  <meta charset="utf-8">
+  <title>2NT</title>
+  <meta name="description" content="Sample game from cda">
+  <meta name="author" content="cda">
+  <script src="js/jquery-lib-min.js"></script>
+  <style>
+	html,body{ 
+		background: #222; 
+		margin:0; padding:0; 
+		font-family: "Hanuman",serif !important; 
+		height: 100%; 
+		width: 100%; }
+	button{ cursor:pointer;}
+	button:disabled{ cursor:not-allowed !important; }
+	button:focus{ outline:none;}
+	.full-screen{
+		width: 100%;
+		height: 100%;
+		position:fixed;
+	}	
+	@keyframes toggleUp { 
+		0% {opacity: 1}
+		50% {opacity: 0.2;}
+		100% {opacity: 1;}
+	}
+	button.player.active{ animation: toggleUp 0.5s infinite; }
+	
+	
+	.game{	
+		margin-left: auto;
+		margin-right: auto;
+		position: relative;
+		width: 35%;
+		height: 60%;
+		background-color: #131313;
+		border:5px solid #000;
+		border-right:5px dashed red;
+	}
+	.game > svg{width:100%;height:100%; position:absolute; left: 0;}
+	.game > svg >line{ stroke:#000;stroke-width: 5;}
+	.game > button.area{ cursor:pointer; width:20px; height:20px; background-color:#000; border:none; position:absolute; border-radius:50%;}
+
+	button.player{ width:43px; height:45px; position:absolute; border:1px solid #ddd; background-color:#fff; padding:5px !important;  }
+	button.player:before{
+				content: '';
+				position: absolute;
+				border: 10px solid transparent;
+				border-bottom-width: 0;				
+				top: 43px;
+				left: 10px;}
+	button.player > img{ width:30px; height:30px; margin:0; }
+
+	button.player.p1{ border-color:red;}
+	button.player.p1:before{ border-top-color: red; }
+	button.player.p2{ border-color:blue;}
+	button.player.p2:before{ border-top-color: blue; }
+
+	button.player[p='tl']{ top:-55px; left:-22px; }
+	button.player[p='tr']{ top:-55px; left:calc(100% - 22px); }
+	button.player[p='bl']{ top:calc(100% - 55px); left:-22px; }
+	button.player[p='br']{ top:calc(100% - 55px); left:calc(100% - 22px) }
+
+	button.area[p='tl']{ top:-10px; left:-10px;  }
+	button.area[p='tr']{ top:-10px; right:-10px;  }
+	button.area[p='c']{ top:calc(50% - 10px); left:calc(50% - 10px);  }
+	button.area[p='bl']{ bottom:-10px; left:-10px; }
+	button.area[p='br']{ bottom:-10px; right:-10px; }
+  </style>
+</head>
+<body>
+	<div class="full-screen" id="_cda_game">
+		<table width="100%" height="100%">
+			<tr>
+				<td vertical-align="middle" align="center">
+					<div class="game">
+						<svg><line x1="100%" y1="0%" x2="0%" y2="100%" ></line></svg>
+						<svg><line x1="0%" y1="0%" x2="100%" y2="100%"></line></svg>				
+						
+						<button p="tl" class="area" move="[c,tr,bl]" disabled></button>
+						<button p="tr" class="area" move="[c,tl,br]" disabled></button>
+						<button p="c" class="area" move="[tl,tr,bl,br]"></button>
+						<button p="bl" class="area" move="[c,tl,br]" disabled></button>
+						<button p="br" class="area" move="[c,tr,bl]" disabled></button>
+						
+						<button p="tl" class="player p1" ><img src="img/boy.png"/></button>
+						<button p="tr" class="player p2" ><img src="img/girl.png"/></button>
+						<button p="bl" class="player p2" ><img src="img/girl.png"/></button>
+						<button p="br" class="player p1" ><img src="img/boy.png"/></button>
+						
+					</div>					
+				</td>
+			</tr>
+		</table>						
+	</div>
+	
+	<script>
+		selector = $("button.player.p1");
+		$(function(){
+			selector.click(function(e){
+				selector.removeClass("active");
+				$(this).addClass("active");
+				e.stopPropagation();
+			});
+			$("button.area").click(function(e){
+				var player = $("button.player.active");
+				if(player.length != 1) return ;				
+				var f_p = player.attr("p");
+				var t_p = $(this).attr("p");
+				go({pfrom:f_p,pto:t_p});
+			});
+		});
+		function go(obj){
+			var pfrom = obj.pfrom,
+				pto = obj.pto;
+			var div_w = $(".game").width(),
+				div_h = $(".game").height(),				
+				gtop = 0,
+				gleft = 0;
+				
+			switch(pto){
+				case 'tl':
+					gtop = ((div_h * 0)/100)-55;
+					gleft = ((div_w * 0)/100)-22; 
+				break;
+				case 'tr':
+					gtop = ((div_h * 0)/100)-55;
+					gleft = ((div_w * 100)/100)-22;
+				break;
+				case 'c':
+					gtop = ((div_h * 50)/100)-55;
+					gleft = ((div_w * 50)/100)-22;
+				break;
+				case 'bl':
+					gtop = ((div_h * 100)/100)-55;
+					gleft = ((div_w * 0)/100)-22;
+				break;
+				case 'br':
+					gtop = ((div_h * 100)/100)-55;
+					gleft = ((div_w * 100)/100)-22;
+				break;
+			}
+			
+			$('button.player[p="'+pfrom+'"]').animate({
+					left: gleft,
+					top: gtop
+				},
+				{
+					duration: 1000,
+					start: function() {
+						$(".area[p='"+pfrom+"']").prop('disabled', false);
+						$(".area[p='"+pto+"']").prop('disabled', true);
+						$(this).attr('p',pto);
+					}
+				}
+			);
+		}
+	</script>
+</body>
+</html>
