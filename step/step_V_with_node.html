@@ -7,6 +7,7 @@
   <meta name="description" content="Sample game from cda">
   <meta name="author" content="cda">
   <script src="js/jquery-lib-min.js"></script>
+  <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
   <style>
 	html,body{ 
 		background: #222; 
@@ -21,7 +22,26 @@
 		width: 100%;
 		height: 100%;
 		position:fixed;
+	}
+	.home{
+		margin-left: auto;
+		margin-right: auto;
+		position: relative;
+		width: 35%;
+		height: 60%;
+		background-color: #131313;
+		border:1px solid #000;
 	}	
+	.home button.player1, .home button.player2{ border-radius: 20px;
+		border: none;
+		width: 25%;
+		background-color: transparent;
+		box-shadow: 1px 1px 15px 1px black;
+	}
+	.home button.player2{ margin-left:20%; }
+	.home button:hover:enabled {cursor:pointer; box-shadow: 1px 1px 10px 1px #000; animation: toggleUp 0.3s infinite;  }
+	.home button img{ max-width:100%;}
+	
 	@keyframes toggleUp { 
 		0% {opacity: 1}
 		50% {opacity: 0.2;}
@@ -29,7 +49,12 @@
 	}
 	button.player.active{ animation: toggleUp 0.5s infinite; }
 	
+	#_cda_home{   margin-left:0%;  }
+	#_cda_wait{  margin-left:-100%;  }
 	
+	
+	#_cda_game{ margin-left:-100%; }	
+	button.player.active{ animation: toggleUp 0.5s infinite; }
 	.game{	
 		margin-left: auto;
 		margin-right: auto;
@@ -72,6 +97,30 @@
   </style>
 </head>
 <body>
+	<div class="full-screen " id="_cda_home">
+		<table width="100%" height="100%">
+			<tr>
+				<td vertical-align="middle" align="center">
+					<div class="home">
+						<h1>Chose Player</h1>
+						<br/>
+						<button p=1 class="player1"><img src="img/boy.png"/></button>
+						<button p=2 class="player2"><img src="img/girl.png"/></button>							
+					</div>
+				</td>
+			</tr>
+		</table>			
+	</div>
+	<div class="full-screen" id="_cda_wait">
+		<table width="100%" height="100%">
+			<tr>
+				<td vertical-align="middle" align="center">						
+					<div class="wait"><h1>Waiting Player</h1></div>
+				</td>
+			</tr>
+		</table>
+	</div>
+	
 	<div class="full-screen" id="_cda_game">
 		<table width="100%" height="100%">
 			<tr>
@@ -98,8 +147,40 @@
 	</div>
 	
 	<script>
+		var av_move = {
+			'tl':['c','tr','bl'],
+			'tr':['c','tl'],
+			'c':['tl','tr','bl','br'],
+			'bl':['c','tl','br'],
+			'br':['c','bl']
+		};
+		var countPlayer = 0;
+		var socket = io.connect('http://192.168.0.111:3000');
+		socket.on('countplayer', function (obj) {
+			countPlayer = obj.count;
+			$(".home button[p='"+obj.player+"']").prop('disabled', true);
+			if(countPlayer == 2){ 
+				$('#_cda_wait').animate({"margin-top": '-100%'});
+				$('#_cda_home').animate({"margin-top": '-100%'});
+				$('#_cda_game').animate({"margin-left": '0'});
+			}
+		});
+		socket.on('move', function (obj) {
+			go(obj);
+		});
+
 		selector = $("button.player.p1");
-		$(function(){
+		$(function(){		
+			$("#_cda_home button").click(function(){		
+				p = $(this).attr('p');
+				selector = $("button.player.p"+p);
+				$('#_cda_wait .wait').prepend($(this).html());
+				$('#_cda_wait').animate({"margin-left": '0'});
+				$('#_cda_home').animate({"margin-top": '-100%'});
+				countPlayer += 1;
+				socket.emit('countplayer', {count:countPlayer,player:p});
+			});
+			
 			selector.click(function(e){
 				selector.removeClass("active");
 				$(this).addClass("active");
@@ -110,12 +191,18 @@
 				if(player.length != 1) return ;				
 				var f_p = player.attr("p");
 				var t_p = $(this).attr("p");
-				go({pfrom:f_p,pto:t_p});
+				if(av_move[f_p].includes(t_p)){
+					socket.emit('move', {pfrom:f_p,pto:t_p,player:p});
+				}else{
+					alert("Not Allowed");
+				}
 			});
 			$(document).click(function(e){
 				selector.removeClass("active");
 			});
 		});
+		
+		
 		function go(obj){
 			var pfrom = obj.pfrom,
 				pto = obj.pto;
@@ -150,16 +237,22 @@
 			$('button.player[p="'+pfrom+'"]').animate({
 					left: gleft,
 					top: gtop
-				},
-				{
+				 },
+				 {
 					duration: 1000,
 					start: function() {
 						$(".area[p='"+pfrom+"']").prop('disabled', false);
 						$(".area[p='"+pto+"']").prop('disabled', true);
 						$(this).attr('p',pto);
+					},
+					complete: function() {
+						
+					},
+					progress: function(animation, progress) {
+					  
 					}
-				}
-			);
+				 }
+			  );
 		}
 	</script>
 </body>

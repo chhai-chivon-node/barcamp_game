@@ -24,4 +24,9 @@ io.on('connection', function (socket) {
     socket.broadcast.emit('win', obj);
   });
   
+  socket.on("error", function(err){
+    console.log("Caught flash policy server socket error: ");
+    console.log(err.stack);
+  });
+  
 });
