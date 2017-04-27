@@ -8,10 +8,20 @@ var av_move = {
 	'bl':['c','tl','br'],
 	'br':['c','bl']
 };
-var socket = io.connect('http://192.168.0.111:3000');
+var socket = io.connect('http://127.0.0.1:3000');
+socket.on('leave', function (obj) {
+	if(obj.count == 2){
+		alert("Your partner was leave from this game");
+		location.reload();
+	}else{
+		$(".home button[p='"+obj.player+"']").prop('disabled', false);
+		$(".home button[p='"+obj.player+"'] span").remove();
+	}	
+});
 socket.on('countplayer', function (obj) {
 	countPlayer = obj.count;
 	$(".home button[p='"+obj.player+"']").prop('disabled', true);
+	$(".home button[p='"+obj.player+"']").append('<span>Waiting...</span>');
 	if(countPlayer == 2){ 
 		startgame();
 		if(p == 1){
